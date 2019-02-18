@@ -43,3 +43,4 @@ while not game_over:
 
     total_turns +=1
     print("Total turns: {}".format(total_turns))
+    
