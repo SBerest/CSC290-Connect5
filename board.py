@@ -2,32 +2,51 @@ from token import Token
 
 
 class GoBoard:
-    """The 19x19 Board on which the game is played, with 15x15 usable spaces."""
-    def __init__(self):
-        self.size = 15
+    """The 19x19 GoBoard on which the game is played, with 15x15 usable spaces,
+    and textured by a board_skin which is set to "Brown" by default."""
+    def __init__(self, size=15, board_skin="Brown") -> None:
+        self.size = size
         self.spaces = [[None]*self.size]*self.size
+        self.board_skin = board_skin
 
-    def get_piece(self, spaces: list, column: int, row: int) -> Token:
-        return spaces[column][row]
+    def set_board_skin(self, new_skin: str) -> None:
+        """Changes the current board_skin to a new_skin."""
+        self.board_skin = new_skin
 
-    def is_filled(self, spaces: list, column: int, row: int) -> bool:
-        """Return True if spaces[column][row] contains a Token."""
+    def get_token(self, column: int, row: int) -> object:
+        """Returns the Token at spaces[column][row] if there is one.  Otherwise
+        returns None."""
 
-        return type(spaces[column][row]) == Token
+        if self.is_filled(column, row):      # If spaces[column][row] has a
+            return self.spaces[column][row]  # token, return the token.
+        else:                                # If spaces[column][row] does not
+            return None                      # have a token, return None.
 
-    def set_piece(self, spaces: list, column: int, row: int,
+    def is_filled(self, column: int, row: int) -> bool:
+        """Return True if the object at spaces[column][row] is a Token.  Returns
+        false otherwise."""
+        return type(self.spaces[column][row]) == Token
+
+    def set_token(self, column: int, row: int,
                   token: Token) -> None:
-        if not self.is_filled(spaces, column, row):
-            new_token = token
+        """Places token at spaces[column][row] if that space is not filled."""
+        if not self.is_filled(column, row):
+            new_token = token       # Allows token to be altered before placing.
+            adj_spaces_checked = 0  # Spaces immediately adjacent to the target.
 
-            new_token.n_token = self.get_piece(spaces, column, row - 1)
-            new_token.ne_token = self.get_piece(spaces, column + 1, row - 1)
-            new_token.e_token = self.get_piece(spaces, column + 1, row)
-            new_token.se_token = self.get_piece(spaces, column + 1, row + 1)
-            new_token.s_token = self.get_piece(spaces, column, row + 1)
-            new_token.sw_token = self.get_piece(spaces, column - 1, row + 1)
-            new_token.w_token = self.get_piece(spaces, column - 1, row)
-            new_token.nw_token = self.get_piece(spaces, column - 1, row - 1)
+            # The following nested for loop checks the spaces adjacent to
+            # spaces[column][row] for neighbours.
+            for x_offset in range(-1, 2):
+                for y_offset in range(-1, 2):
+                    # Code iterates only if the space checked is not where token
+                    # will be placed.
+                    if not ((x_offset == 0) or (y_offset == 0)):
+                        new_token.neighbours[adj_spaces_checked] = \
+                            self.get_token(column + x_offset, row + y_offset)
+                        adj_spaces_checked += 1
+                        # Adds the token at
+                        # spaces[column + x_offset][row + y_offset] to token's
+                        # list of neighbours and increases the
+                        # adj_spaces_checked accordingly on each iteration.
 
-            spaces[column][row] = new_token
-
+            self.spaces[column][row] = new_token

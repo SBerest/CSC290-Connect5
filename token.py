@@ -1,5 +1,9 @@
 class Token:
-    """Tokens to play the game with."""
+    """Tokens used to play a game of Connect 5.  A Token has a player_num
+    indicating which player set it, a colour, and an x_coord and y_coord
+    indicating its position on a GoBoard.  It also has neighbours immediately
+    adjacent to it vertically, horizontally, and diagonally, all initially set
+    to None."""
     def __init__(self, player_num: int, colour: str, x_coord: int, y_coord: int,
                  north=None, south=None, east=None, west=None, n_east=None,
                  s_east=None, n_west=None, s_west=None):
@@ -9,13 +13,6 @@ class Token:
         self.x = x_coord
         self.y = y_coord
 
-        self.neighbours = {}
-
-        self.n_token = north
-        self.ne_token = n_east
-        self.e_token = east
-        self.se_token = s_east
-        self.s_token = south
-        self.sw_token = s_west
-        self.w_token = west
-        self.nw_token = n_west
+        self.neighbours = [s_west, south, s_east,  # List of self's immediately
+                           west, east, n_west,     # adjacent neighbours.
+                           north, n_east]
