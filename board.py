@@ -28,25 +28,59 @@ class GoBoard:
         return type(self.spaces[column][row]) == Token
 
     def set_token(self, column: int, row: int,
-                  token: Token) -> None:
-        """Places token at spaces[column][row] if that space is not filled."""
+                  token: Token) -> bool:
+        """Places token at spaces[column][row] if that space is not filled.
+        Returns True if token was successfully placed and False otherwise."""
         if not self.is_filled(column, row):
-            new_token = token       # Allows token to be altered before placing.
-            adj_spaces_checked = 0  # Spaces immediately adjacent to the target.
+            new_token = self.set_neighbours(column, row, token)
+            # The above sets token's neighbours.
+            self.update_neighbours(column, row, new_token)
+            # The above updates the neighbours list of new_token's neighbours.
 
-            # The following nested for loop checks the spaces adjacent to
-            # spaces[column][row] for neighbours.
-            for x_offset in range(-1, 2):
-                for y_offset in range(-1, 2):
-                    # Code iterates only if the space checked is not where token
-                    # will be placed.
-                    if not ((x_offset == 0) or (y_offset == 0)):
-                        new_token.neighbours[adj_spaces_checked] = \
-                            self.get_token(column + x_offset, row + y_offset)
-                        adj_spaces_checked += 1
-                        # Adds the token at
-                        # spaces[column + x_offset][row + y_offset] to token's
-                        # list of neighbours and increases the
-                        # adj_spaces_checked accordingly on each iteration.
+            self.spaces[column][row] = new_token  # Places new_token at
+                                                  # spaces[column][row].
+            return True
+        return False
 
-            self.spaces[column][row] = new_token
+    def set_neighbours(self, column: int, row: int, token: Token) -> Token:
+        """Takes token to be placed at spaces[column][row] and sets its
+        neighbours to its immediately adjacent tokens.  Returns a new_token
+        with an updated list of neighbours."""
+        new_token = token  # Allows token to be altered before placing.
+        adj_spaces_checked = 0  # Spaces adjacent to the target checked.
+
+        # The following nested for loop checks the spaces adjacent to
+        # spaces[column][row] for neighbours.
+        for x_offset in range(-1, 2):
+            for y_offset in range(-1, 2):
+                # Code iterates only if the space checked is not where token
+                # will be placed.
+                if not ((x_offset == 0) or (y_offset == 0)):
+                    new_token.neighbours[adj_spaces_checked] = \
+                        self.get_token(column + x_offset, row + y_offset)
+                    adj_spaces_checked += 1
+                    # Adds the token at
+                    # spaces[column + x_offset][row + y_offset] to token's
+                    # list of neighbours and increases the
+                    # adj_spaces_checked accordingly on each iteration.
+        return new_token
+
+    def update_neighbours(self, column: int, row: int, token: Token) -> None:
+        """Takes token to be placed at spaces[column][row] and updates its
+        neighbours' list of neighbours to include token."""
+        adj_spaces_checked = 0  # Spaces adjacent to the target checked.
+
+        # The following nested for loop iterates through token's neighbours.
+        for x_offset in range(-1, 2):
+            for y_offset in range(-1, 2):
+                # Code iterates only if the space checked is not where token
+                # will be placed.
+                if not ((x_offset == 0) or (y_offset == 0)):
+                    # Code iterates only if the space checked is filled.
+                    if self.is_filled(column + x_offset, row + y_offset):
+                        token.neighbours[adj_spaces_checked]. \
+                            neighbours[8 - adj_spaces_checked] = token
+                        # Adds token to the list of neighbours of the token at
+                        # spaces[column + x_offset][row + y_offset].
+                    adj_spaces_checked += 1
+                    # Adjusts adj_spaces_checked accordingly on each iteration.
