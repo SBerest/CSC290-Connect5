@@ -9,7 +9,7 @@ class Token:
                  s_east=None, n_west=None, s_west=None):
         self.player_num = player_num
         self.colour = colour
-
+ 
         self.x = x_coord
         self.y = y_coord
 
