@@ -1,5 +1,11 @@
 import pygame, pygame.draw
 import sys
+from board import GoBoard
+from board import Token
+import player
+import undo
+import random #for random.randint
+import AI
 from pygame.locals import *
 
 pygame.init()
@@ -27,7 +33,7 @@ clock = pygame.time.Clock()
 # Loading in the pictures for the menu.
 background_image = pygame.image.load("assets/background_image.jpg")
 background_blur = pygame.image.load("assets/background_blur.jpg")
-instructions_image = pygame.image.load("assets/instructions.jpg")
+instructions_image = pygame.image.load("assets/instructions.png")
 game_picture = pygame.image.load("assets/gameboard.png")
 black_tile = pygame.image.load("assets/Black.png")
 white_tile = pygame.image.load("assets/White.png")
@@ -44,6 +50,11 @@ def title_display(text):
     font = pygame.font.SysFont('Haettenschweiler', 125)
     title = font.render(text, True, title_color)
     game_menu.blit(title, (150,25))
+
+mode = 0
+win = 0
+hover_pos = (-1,-1)
+start_pvp = 0
 
 class button():
     """ Creates an instance of a button on the game menu.
@@ -105,7 +116,35 @@ class button():
             if coord[1] > self.y and coord[1] < self.y + self.height:
                 return True
         return False
+        
+ai = None
+board = None
+turn = 0
 
+def init_pvp():
+    #Initiates the pvp objects
+    board = GoBoard()
+    start_pvp = 1
+    turn = 0
+
+def kill_pvp():
+    #Kills the pvp objects
+    start_pvp = 0
+    board = None
+    turn = 0
+    
+def init_pva(difficulty):
+    #Initiates the pva objects
+    ai = AI(difficulty)  
+    board = GoBoard()
+    turn = 0
+    
+def kill_pva():
+    #Kills the pva objects
+    ai = None
+    board = None
+    turn = 0
+    
 def draw_main_menu():
     """
     Used within the game loop, the buttons, title, and images will constantly be redrawn until the loop exits.
@@ -141,7 +180,7 @@ def draw_board():
     game_menu.fill((255,255,255))
     game_menu.blit(background_blur,[0,0])
     back_button.draw(game_menu, (0, 0, 0))
-    myfont = pygame.font.SysFont('Time New Roman', 20)
+    myfont = pygame.font.SysFont('Time New Roman', 50)
     
     #If the mouse is near the grid draw the preview of where it's placed
     if hover_pos != (-1,-1):
@@ -151,6 +190,23 @@ def draw_board():
     for tile in tile_pos:
         game_menu.blit(white_tile,(tile[0]-13,tile[1]-13))
     
+    if win == 1:
+        pygame.draw.rect(game_menu, (0, 0, 0), (60, 500, 200, 80), 0)
+        textsurface = myfont.render("P1 Victory", False, (255,255, 255))
+        game_menu.blit(textsurface,(75,520))
+    
+    if win == 2:
+        pygame.draw.rect(game_menu, (255, 255, 255), (280, 500, 200, 80), 0)
+        pygame.draw.rect(game_menu, (0, 0, 0), (280, 500, 200, 80), 2)
+        textsurface = myfont.render("P2 Victory", False, (0,0,0))
+        game_menu.blit(textsurface,(295,520))
+
+    if win == 3:    
+        pygame.draw.rect(game_menu, (255, 255, 255), (280, 500, 200, 80), 0)
+        pygame.draw.rect(game_menu, (0, 0, 0), (280, 500, 200, 80), 2)
+        textsurface = myfont.render("AI Victory", False, (0,0,0))
+        game_menu.blit(textsurface,(297,520))
+
     #If any tiles are placed print out the position of the most recently placed one
     if len(tile_pos) > 0:
         tile = tile_pos[len(tile_pos)-1]
@@ -169,8 +225,6 @@ pvp_button = button(button_color, 300, 300, 200, 75, 'PVP Mode')
 exit_button = button(button_color, 300, 500, 200, 75, 'Exit')
 help_button = button(button_color, 300, 400, 200, 75, 'Instructions')
 back_button = button(button_color, 695, 560, 100, 35, 'Back')
-mode = 0
-hover_pos = (-1,-1)
 
 
 #The display logic
@@ -251,6 +305,9 @@ while not is_crashed:
     
     #Player versus Player screen
     if mode == 2:
+        if start_pvp == 0:
+            init_pvp()
+        start_pvp = 1
         pygame.display.set_caption('Versus.')
         draw_board()
         pygame.display.update()
@@ -267,11 +324,13 @@ while not is_crashed:
             #on mouse releae
             if event.type == pygame.MOUSEBUTTONUP:
                 if back_button.hover(coord):
+                    start_pvp = 0
+                    kill_pvp()
                     mode = 0
                 click_x = coord[0]
                 click_y = coord[1]
                 #If mouse is close to grid find a position snapped to the grid
-                if 45 < coord[0] < 493 and 45 < coord[1] < 493:
+                if 45 < coord[0] < 493 and 45 < coord[1] < 493 and win == 0:
                     if 30 > click_x: 
                         click_x = 30; 
                     click_x = click_x + 15;
@@ -284,13 +343,15 @@ while not is_crashed:
                 else:
                     click_x = -1
                     click_y = -1
-                #append it for printing purposes (temp)
-                tile_pos.append((click_x,click_y))
-                
                 #change it to the index
                 click_x = (click_x-60)/30
                 click_y = (click_y-60)/30
+                    
+                rand_int = random.randint(0,2)
+                pygame.mixer.music.load('sounds/place_'+str(rand_int)+'.mp3')
+                pygame.mixer.music.play(0)
                 print(click_x,click_y)
+                
                 
             #on mouse movement
             if event.type == pygame.MOUSEMOTION:
@@ -300,7 +361,7 @@ while not is_crashed:
                     back_button.color = button_color
                 #if mouse near grid find a position snapped to the grid
                 #This is saved for draw_board
-                if 45 < coord[0] < 493 and 45 < coord[1] < 493:
+                if 45 < coord[0] < 493 and 45 < coord[1] < 493 and win == 0:
                     hov_x = coord[0]
                     hov_y = coord[1]
                     
