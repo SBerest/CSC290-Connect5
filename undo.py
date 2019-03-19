@@ -33,3 +33,4 @@ def undo(board):
     if not Board_History:
         return board #in case undo is called before any moves were played
     Board_History.pop() 
+    Board_History.pop() #has to go back 2 turns
