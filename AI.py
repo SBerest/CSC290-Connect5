@@ -45,10 +45,10 @@ def hard_move(board,last_move):
     '''
         hard_move takes the board and it's previous move to first check if it can win or stop the opponent from winning
         then it checks for an "open three" (ex 00xxx00). If it can't do either it just does an easy move.
-        input:  
+        @param:  
             board:      2d list of ints representing the board
             last_move:  len 2 list representing where the ai player their previous move
-        output:
+        @return:
             move:       len 2 list representing coordinates to play next
             
     '''  
@@ -62,16 +62,16 @@ def hard_move(board,last_move):
         
 
 def med_move(board,last_move):
-    '''      
-     input: 
-       board: 2d int list representing the board
-       last_move: 2 int list representing the last move      
-    output:  
-       move: 2 item list representing the next move
-      
+    '''
        Medium move checks if, in a given set of 5 squares there are four of a single player's tile
        then return the position of the the empty square that is not that player's.
        Otherwise return easy_move's output.
+       
+     @param: 
+       board: 2d int list representing the board
+       last_move: 2 int list representing the last move      
+    @return:  
+       move: 2 item list representing the next move      
     '''   
     move = check_four_in_five(board)
     if move == [-1,-1]:
@@ -85,10 +85,10 @@ def easy_move(board,last_move):
                It does this by looking in random adjacent squares. If it finds an empty square
                it places the tile there, if it is surrounded by tiles it finds a random empty 
                square to place it's tile.
-     input: 
+     @param: 
        board: 2d int list representing the board
        last_move: 2 int list representing the last move
-     output: 
+     @return: 
        move: 2 item list representing the next move
     '''
     print("Last:",last_move)
@@ -137,9 +137,9 @@ def check_four_in_five(board):
     squares. Saving the location of the most recent empty tile. When it finds a sequence with 1 zero and
     four of a single player's tiles it returns tht position.
     
-    input: 
+    @param: 
         board: 2d list of ints representing the board
-    output:
+    @return:
         move: the position of the 0.
     '''
     #Horizontal checking
@@ -268,9 +268,9 @@ def check_open_three(board):
     When it finds a sequence with 3 zeros and 3 of a single player's tiles it returns the position of the 0
     in the centre of the formation.
     
-    input: 
+    @param: 
         board: 2d list of ints representing the board
-    output:
+    @return:
         move: the location of the middle 0.
     '''
     
@@ -410,10 +410,10 @@ def ai_move(board, difficulty):
     '''
     Given a difficulty and a board return that level of ai move.
     
-    input:
+    @param:
         board: a Board object
         difficulty: an int representing the difficulty
-    output:
+    @return:
         move: a move given as a list 
     '''
     last_move = board.get_last_move()

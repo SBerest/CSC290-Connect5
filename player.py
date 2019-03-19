@@ -2,7 +2,7 @@
 # connect five
 class Player:
 
-    def __init__(self, name):
+    def __init__(self, name=""):
         self.name = name    #Name of player
         self.turns = 0      #Number of turns by player
 
@@ -27,7 +27,8 @@ player2 = Player("Player2")
 game_over = False
 total_turns = 0
 
-
+'''
+Just to show it works
 # Logic for switching between the players and keep track
 # of turns
 while not game_over:
@@ -43,3 +44,4 @@ while not game_over:
 
     total_turns +=1
     print("Total turns: {}".format(total_turns))
+'''
