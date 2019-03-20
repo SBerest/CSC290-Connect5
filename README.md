@@ -7,7 +7,7 @@
 - [Game Features](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#game-features)
 - [Controls](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#controls)
 - [Installation](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#installation)
-- [License](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#License)
+- [License](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#license)
 
 ## How to Play
 
@@ -56,7 +56,7 @@
 - :arrow_down: [Download the prebuilt zip file and unzip it.](https://github.com/SBerest/CSC290-Project-ArraysStartAt1/releases/latest)
 - Run the executable named `ConnectFive` after you extract the file.
 
-##License
+## License
 
 [[Back to top]](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#index)
 
