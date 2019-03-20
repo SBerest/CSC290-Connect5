@@ -7,7 +7,7 @@ from undo import Board_History
 import player
 import undo
 import random #for random.randint
-import AI
+from ai import AI
 from pygame.locals import *
 
 pygame.init()
@@ -42,6 +42,7 @@ white_tile = pygame.image.load("assets/White.png")
 black_ghost = pygame.image.load("assets/Black_trans.png")
 white_ghost = pygame.image.load("assets/White_trans.png")
 sidebar = pygame.image.load("assets/sidebar.png")
+sidebar_ai = pygame.image.load("assets/sidebar_ai.png")
 
 def title_display(text):
     """
@@ -59,13 +60,16 @@ win = 0
 back = 0
 hover_pos = (-1,-1)
 start_pvp = 0
-ai = None
+start_pva = 0
+Ai = None
 board = GoBoard()
 turn = 0
 last_black = None
 last_white = None
 is_crashed = False
 board_history = None
+timer = 0
+difficulty = 0
 
 def init_pvp():
     #Initiates the pvp objects
@@ -84,10 +88,14 @@ def reset_pvp():
     global board
     global turn
     global start_pvp
+    global board_history
+    global win
     board = GoBoard(15)
+    board_history = Board_History()
     print("init_pvp")
     start_pvp = 1
     turn = 0
+    win = 0
     
 
 def kill_pvp():
@@ -106,22 +114,51 @@ def init_pva(difficulty):
     #Initiates the pva objects
     global board
     global turn
-    global ai
+    global Ai
     global start_pva
-    ai = AI(difficulty)  
-    print("init_pva")
+    global timer
+    global board_history
+    global win
+    win = 0
+    board_history = Board_History()
+    timer = 0
+    start_pva = 1
+    Ai = AI(difficulty)  
+    print("reset_pva")
+    board = GoBoard()
+    turn = 0
+    
+def reset_pva():
+    #resets the pva objects
+    global board
+    global turn
+    global start_pvp
+    global timer
+    global board_history
+    board_history = Board_History()
+    timer = 0
+    timer = 0
+    start_pva = 1
+    Ai = AI(difficulty)  
+    print("reset_pva")
     board = GoBoard()
     turn = 0
     
 def kill_pva():
     global board
     global turn
-    global ai
+    global Ai
     global start_pva
     global win
+    global timer
+    global difficulty
+    global start_pva
+    difficulty = 0
+    timer = 0
     win = 0
+    start_pva = 0
     #Kills the pva objects
-    ai = None
+    Ai = None
     print("kill_pva")
     board = None
     turn = 0
@@ -151,6 +188,30 @@ def undo():
         else:
             last_white = None
             last_black = board.tokens_placed[0]
+            
+def undo_ai():
+    global board
+    global turn
+    global win
+    global last_black
+    global last_white
+    print("Undo")
+    board = board_history.undo(board,2)
+    if(len(board.tokens_placed) > 1):
+        if turn == 0:
+            last_white = board.tokens_placed[len(board.tokens_placed)-1]
+            last_black = board.tokens_placed[len(board.tokens_placed)-2]
+                
+        else:
+            last_black = board.tokens_placed[len(board.tokens_placed)-1]
+            last_white = board.tokens_placed[len(board.tokens_placed)-2]
+    else:
+        if turn == 0:
+            last_white = None
+            last_black = None
+        else:
+            last_white = None
+            last_black = board.tokens_placed[0]
 def draw_main_menu():
     """
     Used within the game loop, the buttons, title, and images will constantly be redrawn until the loop exits.
@@ -161,6 +222,9 @@ def draw_main_menu():
     game_menu.blit(game_picture, [0,200])
     game_menu.blit(game_picture, [485, 200])
     title_display('Connect Five')
+    easy_button.draw(game_menu,(0,0,0))
+    med_button.draw(game_menu,(0,0,0))
+    hard_button.draw(game_menu,(0,0,0))
     single_player_button.draw(game_menu, (0, 0, 0))
     pvp_button.draw(game_menu, (0, 0, 0))
     exit_button.draw(game_menu, (0, 0, 0))
@@ -208,8 +272,10 @@ def draw_board():
         else:
             game_menu.blit(white_ghost,(hover_pos))
     
-    if ai == None:
+    if Ai == None:
         game_menu.blit(sidebar,[0,0])
+    else:
+        game_menu.blit(sidebar_ai,[0,0])
     
     #Draw all tiles already placed
     if board != None:
@@ -269,7 +335,10 @@ def draw_board():
         game_menu.blit(textsurface,(640,185))
     
 #initializing buttons    
-single_player_button = button(button_color, 300, 200, 200, 75, 'Single Player')
+single_player_button = button(button_color, 300, 200, 200, 33, 'Single Player')
+easy_button = button(button_color, 300, 233, 66, 32, 'Easy')
+med_button = button(button_color, 366, 233, 67, 32, 'Medium')
+hard_button = button(button_color, 434, 233, 66, 32, 'Hard')
 pvp_button = button(button_color, 300, 300, 200, 75, 'PVP Mode')
 exit_button = button(button_color, 300, 500, 200, 75, 'Exit')
 help_button = button(button_color, 300, 400, 200, 75, 'Instructions')
@@ -310,7 +379,10 @@ def check_win():
                     win = 1
                     return True
                 elif count[2] == 5:
-                    win = 2
+                    if start_pvp == 1:
+                        win = 2
+                    elif start_pva == 1:
+                        win = 3
                     return True
                 
     #Vertical checking
@@ -440,8 +512,17 @@ while not is_crashed:
             #On mouse release
             if event.type == pygame.MOUSEBUTTONUP:
                 if single_player_button.hover(coord):
-                    print('Player chooses Single Player mode.')
-                    pass
+                    pygame.mixer.music.load("invalid.mp3")
+                    pygame.mixer.music.play(0)
+                elif easy_button.hover(coord):
+                    mode = 3
+                    difficulty = 0
+                elif med_button.hover(coord):
+                    mode = 3
+                    difficulty = 1
+                elif hard_button.hover(coord):
+                    mode = 3
+                    difficulty = 2
                 elif pvp_button.hover(coord):
                     mode = 2
                     print('Player chooses PVP mode.')
@@ -458,31 +539,46 @@ while not is_crashed:
             #On mouse movement
             if event.type == pygame.MOUSEMOTION:
                 #change colour for responsivness
-                if single_player_button.hover(coord):
-                    single_player_button.color = button_select_color
-                    pvp_button.color = button_color
-                    exit_button.color = button_color
-                    help_button.color = button_color
-                elif pvp_button.hover(coord):
+                if pvp_button.hover(coord):
                     pvp_button.color = button_select_color
-                    single_player_button.color = button_color
                     exit_button.color = button_color
                     help_button.color = button_color
                 elif exit_button.hover(coord):
                     exit_button.color = button_select_color
-                    single_player_button.color = button_color
                     pvp_button.color = button_color
                     help_button.color = button_color
                 elif help_button.hover(coord):
                     help_button.color = button_select_color
-                    single_player_button.color = button_color
                     pvp_button.color = button_color
                     exit_button.color = button_color
-                else:
-                    single_player_button.color = button_color
+                elif easy_button.hover(coord):
+                    easy_button.color = button_select_color
                     pvp_button.color = button_color
                     exit_button.color = button_color
                     help_button.color = button_color
+                    med_button.color = button_color
+                    hard_button.color = button_color
+                elif med_button.hover(coord):
+                    med_button.color = button_select_color
+                    pvp_button.color = button_color
+                    exit_button.color = button_color
+                    help_button.color = button_color
+                    easy_button.color = button_color
+                    hard_button.color = button_color
+                elif hard_button.hover(coord):
+                    hard_button.color = button_select_color
+                    pvp_button.color = button_color
+                    exit_button.color = button_color
+                    help_button.color = button_color
+                    easy_button.color = button_color
+                    med_button.color = button_color
+                else:
+                    pvp_button.color = button_color
+                    exit_button.color = button_color
+                    help_button.color = button_color
+                    easy_button.color = button_color
+                    med_button.color = button_color
+                    hard_button.color = button_color
 
     
     #instruction screen
@@ -516,7 +612,7 @@ while not is_crashed:
             print("init")
             init_pvp()
         start_pvp = 1
-        pygame.display.set_caption('Versus.')
+        pygame.display.set_caption('Versus a Friend.')
         draw_board()
         pygame.display.update()
         clock.tick(60)  # Frames per second.        
@@ -585,6 +681,142 @@ while not is_crashed:
                         pygame.mixer.music.load('sounds/invalid.mp3')
                         pygame.mixer.music.set_volume(0.2)
                         pygame.mixer.music.play(0)
+                
+            #on mouse movement
+            if event.type == pygame.MOUSEMOTION:
+                if back_button.hover(coord):
+                    back_button.color = button_select_color
+                    play_help_button.color = button_color
+                    undo_button.color = button_color
+                    reset_button.color = button_color
+                elif undo_button.hover(coord):
+                    undo_button.color = button_select_color
+                    back_button.color = button_color
+                    play_help_button.color = button_color
+                    reset_button.color = button_color
+                elif play_help_button.hover(coord):
+                    play_help_button.color = button_select_color
+                    back_button.color = button_color
+                    undo_button.color = button_color
+                    reset_button.color = button_color
+                elif reset_button.hover(coord):
+                    reset_button.color = button_select_color
+                    back_button.color = button_color
+                    play_help_button.color = button_color
+                    undo_button.color = button_color
+                else:
+                    back_button.color = button_color
+                    play_help_button.color = button_color
+                    undo_button.color = button_color
+                    reset_button.color = button_color
+                    
+                #if mouse near grid find a position snapped to the grid
+                #This is saved for draw_board
+                if 45 < coord[0] < 493 and 45 < coord[1] < 493 and win == 0:
+                    hov_x = coord[0]
+                    hov_y = coord[1]
+                    
+                    if 30 > hov_x: 
+                        hov_x = 30; 
+                    hov_x = hov_x + 15;
+                    hov_x = hov_x - (hov_x % 30); 
+                    
+                    if 30 > hov_y: 
+                        hov_y = 30; 
+                    hov_y = hov_y + 15;
+                    hov_y = hov_y - (hov_y % 30); 
+                    
+                    hover_pos = (hov_x-13,hov_y-13)
+                else:
+                    hover_pos = (-1,-1)
+    #versus ai mode
+    if mode == 3:
+        if start_pva == 0:
+            init_pva(difficulty)
+        start_pva = 1
+        pygame.display.set_caption('Versus Ai.')
+        draw_board()
+        pygame.display.update()
+        clock.tick(60)  # Frames per second.  
+
+        if turn == 1:
+            move = Ai.move(board)
+            board.set_token(move[0],move[1],turn+1,get_colour(),board_history)
+            last_white = board.tokens_placed[len(board.tokens_placed)-1]
+            check_win()
+            change_turn()
+            draw_board()
+            rand_int = random.randint(0,2)
+            pygame.mixer.music.load('sounds/place_'+str(rand_int)+'.mp3')
+            pygame.mixer.music.set_volume(1.0)
+            pygame.mixer.music.play(0)
+            
+        
+        for event in pygame.event.get():  # Creates a list of events that the user does with cursor.
+            coord = pygame.mouse.get_pos()  # Grabs the position of the mouse.
+
+            if event.type == pygame.QUIT:
+                crashed = True
+                pygame.quit()
+                quit()
+            
+            #on mouse releae
+            if event.type == pygame.MOUSEBUTTONUP:
+                if undo_button.hover(coord):
+                    print("tokens1:",len(board.tokens_placed))
+                    undo_ai()
+                    draw_board()
+                    print("tokens2:",len(board.tokens_placed))
+                elif play_help_button.hover(coord):
+                    back = 3
+                    mode = 1
+                elif back_button.hover(coord):
+                    start_pva = 0
+                    kill_pva()
+                    mode = 0
+                elif reset_button.hover(coord):
+                    reset_pvp()
+                click_x = coord[0]
+                click_y = coord[1]
+                if turn == 0:
+                    #If mouse is close to grid find a position snapped to the grid
+                    if 45 < coord[0] < 493 and 45 < coord[1] < 493 and win == 0:
+                        if 30 > click_x: 
+                            click_x = 30; 
+                        click_x = click_x + 15;
+                        click_x = click_x - (click_x % 30); 
+                        
+                        if 30 > click_y: 
+                            click_y = 30; 
+                        click_y = click_y + 15;
+                        click_y = click_y - (click_y % 30);
+                        
+                        #play 
+                        
+                        #change it to the index
+                        click_x = (click_x-60)//30
+                        click_y = (click_y-60)//30
+                    else:
+                        click_x = -1
+                        click_y = -1
+                        
+                    if click_x != -1 and click_y != -1:
+                        if board.set_token(click_x,click_y,turn+1,get_colour(),board_history):
+                            if turn == 0:
+                                last_black = board.tokens_placed[len(board.tokens_placed)-1]
+                            else:
+                                last_white = board.tokens_placed[len(board.tokens_placed)-1]
+                            check_win()
+                            change_turn()
+                            draw_board()
+                            rand_int = random.randint(0,2)
+                            pygame.mixer.music.load('sounds/place_'+str(rand_int)+'.mp3')
+                            pygame.mixer.music.set_volume(1.0)
+                            pygame.mixer.music.play(0)
+                        else:
+                            pygame.mixer.music.load('sounds/invalid.mp3')
+                            pygame.mixer.music.set_volume(0.2)
+                            pygame.mixer.music.play(0)
                 
             #on mouse movement
             if event.type == pygame.MOUSEMOTION:

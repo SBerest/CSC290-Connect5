@@ -1,48 +1,10 @@
-
+import random
 class AI:
     def __init__(self,difficulty):
         self.difficulty = difficulty
         self.last_move = [-1,-1]
           
-    def hard_move(board,last_move):
-        '''
-            hard_move takes the board and it's previous move to first check if it can win or stop the opponent from winning
-            then it checks for an "open three" (ex 00xxx00). If it can't do either it just does an easy move.
-            @param:  
-                board:      2d list of ints representing the board
-                last_move:  len 2 list representing where the ai player their previous move
-            @return:
-                move:       len 2 list representing coordinates to play next
-                
-        '''  
-        move = check_four_in_five(board)
-        if move == [-1,-1]:
-            move = check_open_three(board)
-            if move == [-1,-1]:
-                move = easy_move(board,last_move)
-        return move
-        
-            
-
-    def med_move(board,last_move):
-        '''
-           Medium move checks if, in a given set of 5 squares there are four of a single player's tile
-           then return the position of the the empty square that is not that player's.
-           Otherwise return easy_move's output.
-           
-         @param: 
-           board: 2d int list representing the board
-           last_move: 2 int list representing the last move      
-        @return:  
-           move: 2 item list representing the next move      
-        '''   
-        move = check_four_in_five(board)
-        if move == [-1,-1]:
-            move = easy_move(board,last_move)
-        return move
-            
-
-    def easy_move(board,last_move):        
+    def easy_move(self,board,last_move):        
         '''
          easy_move takes the board and it's previous move to decide where to place it's next piece.
                    It does this by looking in random adjacent squares. If it finds an empty square
@@ -89,9 +51,47 @@ class AI:
                 if board[x][y] == 0:
                     break;
             
+        self.last_move = move
         return move
         
-    def check_four_in_five(board):
+    def med_move(self,board,last_move):
+        '''
+           Medium move checks if, in a given set of 5 squares there are four of a single player's tile
+           then return the position of the the empty square that is not that player's.
+           Otherwise return easy_move's output.
+           
+         @param: 
+           board: 2d int list representing the board
+           last_move: 2 int list representing the last move      
+        @return:  
+           move: 2 item list representing the next move      
+        '''   
+        move = self.check_four_in_five(board)
+        if move == [-1,-1]:
+            move = self.easy_move(board,last_move)
+        self.last_move = move
+        return move
+            
+    def hard_move(self,board,last_move):
+        '''
+            hard_move takes the board and it's previous move to first check if it can win or stop the opponent from winning
+            then it checks for an "open three" (ex 00xxx00). If it can't do either it just does an easy move.
+            @param:  
+                board:      2d list of ints representing the board
+                last_move:  len 2 list representing where the ai player their previous move
+            @return:
+                move:       len 2 list representing coordinates to play next
+                
+        '''  
+        move = self.check_four_in_five(board)
+        if move == [-1,-1]:
+            move = self.check_open_three(board)
+            if move == [-1,-1]:
+                move = self.easy_move(board,last_move)
+        self.last_move = move
+        return move
+        
+    def check_four_in_five(self,board):
         '''
         check_four_in_five returns the position of an empty square in a set of 4 of one player's tile and
         one empty square. (ex 11101) returns the position of 0
@@ -218,9 +218,8 @@ class AI:
                 x-=1
                 y-=1
         return [-1,-1]
-
         
-    def check_open_three(board):
+    def check_open_three(self,board):
         '''
         check_open_three returns the position of an empty square in a set of 3 empty squares and 
         3 of a single players squares where one empty square is in the middle 4 squares. (ex 010110) 
@@ -368,23 +367,21 @@ class AI:
                 y-=1
         return [-1,-1]
 
-
-    def move(board, difficulty):
+    def move(self,board):
         '''
-        Given a difficulty and a board return that level of ai move.
+        Given the and a board return that level of ai move.
         
         @param:
             board: a Board object
-            difficulty: an int representing the difficulty
         @return:
             move: a move given as a list 
         '''
         last_move = board.get_last_move()
-        int_board = board.get_int_list()
+        int_board = board.get_board_list()
         
-        if difficulty == 0:
-            return easy_move(int_board,self.last_move)
-        elif difficulty == 1:
-            return med_move(int_board,self.last_move)
-        elif difficulty == 2:
-            return hard_move(int_board,self.last_move)
+        if self.difficulty == 0:
+            return self.easy_move(int_board,self.last_move)
+        elif self.difficulty == 1:
+            return self.med_move(int_board,self.last_move)
+        elif self.difficulty == 2:
+            return self.hard_move(int_board,self.last_move)

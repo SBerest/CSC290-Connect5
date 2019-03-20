@@ -83,7 +83,13 @@ class GoBoard:
                                                   # placed.
             return True
         return False
-
+    def get_last_move(self):
+        '''returns the last move of white as a list of ints
+        '''
+        token = self.tokens_placed[len(self.tokens_placed)-2]
+        return [token.x,token.y]
+    
+    
     def get_board_list(self):
         '''Gives the board in list form to be easy read.
         @return: board
