@@ -7,7 +7,7 @@
 - [Game Features](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#game-features)
 - [Controls](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#controls)
 - [Installation](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#installation)
-- [Lincense](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#lincense)
+- [License](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#License)
 
 ## How to Play
 
