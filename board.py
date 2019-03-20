@@ -50,22 +50,19 @@ class GoBoard:
         """Return True if the object at spaces[column][row] is a Token.  Returns
         false otherwise.
         :rtype: bool"""
-        if type(self.spaces[column][row]) == Token:
-            print("Theres a ",self.spaces[column][row].player_num, "at", column, row)
         return type(self.spaces[column][row]) == Token
 
-    def set_token(self, column: int, row: int, player_num: id, colour) -> bool:
+    def set_token(self, column: int, row: int, player_num: id, colour, board_history) -> bool:
         """Places token at spaces[column][row] if that space is not filled.
         Returns True if token was successfully placed and False otherwise.
         :rtype: bool"""
-        print("Try: ",column, row)
         if not self.is_filled(column, row):
+            board_history.push(self)
             token = Token(player_num, colour, column, row)
             #new_token = self.set_neighbours(column, row, token)
             # The above sets token's neighbours.
             #self.update_neighbours(column, row, new_token)
             # The above updates the neighbours list of new_token's neighbours.
-            print("Set: ", token.player_num, column, row,token.x,token.y)
             self.spaces[column][row] = token  # Places new_token at
                                                   # spaces[column][row].
             self.tokens_placed.append(token)  # Updates the list of tokens

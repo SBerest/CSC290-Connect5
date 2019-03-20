@@ -3,6 +3,7 @@ import sys
 from board import GoBoard
 from board import Token
 from button import button
+from undo import Board_History
 import player
 import undo
 import random #for random.randint
@@ -63,14 +64,17 @@ board = GoBoard()
 turn = 0
 last_black = None
 last_white = None
-
+is_crashed = False
+board_history = None
 
 def init_pvp():
     #Initiates the pvp objects
+    global board_history
     global board
     global turn
     global start_pvp
     board = GoBoard(15)
+    board_history = Board_History()
     print("init_pvp")
     start_pvp = 1
     turn = 0
@@ -122,6 +126,31 @@ def kill_pva():
     board = None
     turn = 0
     
+def undo():
+    global board
+    global turn
+    global win
+    global last_black
+    global last_white
+    print("Undo")
+    if(len(board.tokens_placed) > 0):
+        change_turn()
+    board = board_history.undo(board,1)
+    if(len(board.tokens_placed) > 1):
+        if turn == 0:
+            last_white = board.tokens_placed[len(board.tokens_placed)-1]
+            last_black = board.tokens_placed[len(board.tokens_placed)-2]
+                
+        else:
+            last_black = board.tokens_placed[len(board.tokens_placed)-1]
+            last_white = board.tokens_placed[len(board.tokens_placed)-2]
+    else:
+        if turn == 0:
+            last_white = None
+            last_black = None
+        else:
+            last_white = None
+            last_black = board.tokens_placed[0]
 def draw_main_menu():
     """
     Used within the game loop, the buttons, title, and images will constantly be redrawn until the loop exits.
@@ -239,8 +268,7 @@ def draw_board():
         game_menu.blit(outline,(641,186))
         game_menu.blit(textsurface,(640,185))
     
-    
-is_crashed = False
+#initializing buttons    
 single_player_button = button(button_color, 300, 200, 200, 75, 'Single Player')
 pvp_button = button(button_color, 300, 300, 200, 75, 'PVP Mode')
 exit_button = button(button_color, 300, 500, 200, 75, 'Exit')
@@ -503,7 +531,10 @@ while not is_crashed:
             #on mouse releae
             if event.type == pygame.MOUSEBUTTONUP:
                 if undo_button.hover(coord):
-                    print("Undo")
+                    print("tokens1:",len(board.tokens_placed))
+                    undo()
+                    draw_board()
+                    print("tokens2:",len(board.tokens_placed))
                 elif play_help_button.hover(coord):
                     back = 2
                     mode = 1
@@ -538,15 +569,14 @@ while not is_crashed:
                     click_y = -1
                     
                 if click_x != -1 and click_y != -1:
-                    if board.set_token(click_x,click_y,turn+1,get_colour()):
+                    if board.set_token(click_x,click_y,turn+1,get_colour(),board_history):
                         if turn == 0:
                             last_black = board.tokens_placed[len(board.tokens_placed)-1]
-                            print(last_black.x,last_black.y)
                         else:
                             last_white = board.tokens_placed[len(board.tokens_placed)-1]
-                        draw_board()
                         check_win()
                         change_turn()
+                        draw_board()
                         rand_int = random.randint(0,2)
                         pygame.mixer.music.load('sounds/place_'+str(rand_int)+'.mp3')
                         pygame.mixer.music.set_volume(1.0)
@@ -603,4 +633,5 @@ while not is_crashed:
                     hover_pos = (hov_x-13,hov_y-13)
                 else:
                     hover_pos = (-1,-1)
+            
                     
