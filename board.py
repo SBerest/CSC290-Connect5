@@ -51,7 +51,7 @@ class GoBoard:
         false otherwise.
         :rtype: bool"""
         if type(self.spaces[column][row]) == Token:
-            print("token already at",column,row)
+            print("Theres a ",self.spaces[column][row].player_num, "at", column, row)
         return type(self.spaces[column][row]) == Token
 
     def set_token(self, column: int, row: int, player_num: id, colour) -> bool:
@@ -65,7 +65,7 @@ class GoBoard:
             # The above sets token's neighbours.
             #self.update_neighbours(column, row, new_token)
             # The above updates the neighbours list of new_token's neighbours.
-            print("Set: ", column, row,token.x,token.y)
+            print("Set: ", token.player_num, column, row,token.x,token.y)
             self.spaces[column][row] = token  # Places new_token at
                                                   # spaces[column][row].
             self.tokens_placed.append(token)  # Updates the list of tokens
@@ -97,8 +97,10 @@ class GoBoard:
                 if self.is_filled(x, y):
                     token = self.get_token(x, y)
                     board[x][y] = token.player_num
-                board[x][y] = 0
+                else:
+                    board[x][y] = 0
         return board
+
         '''
     def set_neighbours(self, column: int, row: int, token: Token) -> Token:
         """Takes token to be placed at spaces[column][row] and sets its
@@ -148,4 +150,3 @@ class GoBoard:
                     adj_spaces_checked += 1
                     # Adjusts adj_spaces_checked accordingly on each iteration.
  '''
-'''

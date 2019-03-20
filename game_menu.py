@@ -2,6 +2,7 @@ import pygame, pygame.draw
 import sys
 from board import GoBoard
 from board import Token
+from button import button
 import player
 import undo
 import random #for random.randint
@@ -39,6 +40,7 @@ black_tile = pygame.image.load("assets/Black.png")
 white_tile = pygame.image.load("assets/White.png")
 black_ghost = pygame.image.load("assets/Black_trans.png")
 white_ghost = pygame.image.load("assets/White_trans.png")
+sidebar = pygame.image.load("assets/sidebar.png")
 
 def title_display(text):
     """
@@ -53,95 +55,70 @@ def title_display(text):
 
 mode = 0
 win = 0
+back = 0
 hover_pos = (-1,-1)
 start_pvp = 0
-
-class button():
-    """ Creates an instance of a button on the game menu.
-    """
-
-    def __init__(self, color, x, y, width, height, text=''):
-        """
-        Initializes the attributes of the button.
-
-        @param color: an RGB value stored in a tuple for the color of the button.
-        @type color: tuple
-        @param x: value given to place where the button goes lies in the x-plane within the window.
-        @type x: int
-        @param y: value given to place where the button goes lies in the y-plane within the window.
-        @type y: int
-        @param width: value to instantiate the width of the button.
-        @type width: int
-        @param height: value to instantiate the height of the button.
-        @type height: int
-        @param text: text that will go within the button.
-        @type text: str
-        returns None.
-        """
-        self.color = color
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.text = text
-
-    def draw(self, game_menu, outline=None):
-        """
-        Draws the button on the game menu.
-        @param game_menu: window of the game.
-        @type: window
-        @param outline: creates outline of the box with the given outline colour (using RGB tuple).
-        @type: tuple
-        returns None.
-        """
-        if outline:
-            pygame.draw.rect(game_menu, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0)
-
-        pygame.draw.rect(game_menu, self.color, (self.x, self.y, self.width, self.height), 0)
-
-        if self.text != '':
-            font = pygame.font.SysFont('Open Sans', 25)
-            text = font.render(self.text, True, white)
-            game_menu.blit(text, (
-            self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
-
-    def hover(self, coord):
-        """
-        Returns true or false if the user's mouse is hovered above a specific region.
-        @param coord: coord is the mouse position/tuple of (x, y) coordinates.
-        @type: tuple
-        returns Boolean.
-        """
-        if coord[0] > self.x and coord[0] < self.x + self.width:
-            if coord[1] > self.y and coord[1] < self.y + self.height:
-                return True
-        return False
-        
 ai = None
-board = None
+board = GoBoard()
 turn = 0
+last_black = None
+last_white = None
+
 
 def init_pvp():
     #Initiates the pvp objects
-    board = GoBoard()
+    global board
+    global turn
+    global start_pvp
+    board = GoBoard(15)
+    print("init_pvp")
     start_pvp = 1
     turn = 0
+    
+def reset_pvp():
+    #resets the pvp objects
+    global board
+    global turn
+    global start_pvp
+    board = GoBoard(15)
+    print("init_pvp")
+    start_pvp = 1
+    turn = 0
+    
 
 def kill_pvp():
     #Kills the pvp objects
+    global board
+    global turn
+    global start_pvp
+    global win
+    win = 0
     start_pvp = 0
+    print("kill_pvp")
     board = None
     turn = 0
     
 def init_pva(difficulty):
     #Initiates the pva objects
+    global board
+    global turn
+    global ai
+    global start_pva
     ai = AI(difficulty)  
+    print("init_pva")
     board = GoBoard()
     turn = 0
     
 def kill_pva():
+    global board
+    global turn
+    global ai
+    global start_pva
+    global win
+    win = 0
     #Kills the pva objects
     ai = None
+    print("kill_pva")
     board = None
     turn = 0
     
@@ -177,19 +154,42 @@ def draw_board():
     '''
     draws the board for both PvP and Vs Ai
     '''
+    global board
+    global last_black
+    global last_white
     game_menu.fill((255,255,255))
     game_menu.blit(background_blur,[0,0])
     back_button.draw(game_menu, (0, 0, 0))
+    reset_button.draw(game_menu, (0, 0, 0))
+    undo_button.draw(game_menu, (0, 0, 0))
+    play_help_button.draw(game_menu, (0, 0, 0))
     myfont = pygame.font.SysFont('Time New Roman', 50)
+    coord_font = pygame.font.SysFont('Tw Cen MT Condensed Extra Bold', 65)
+    
+    if turn == 0:
+        game_menu.blit(black_tile,[540,134])
+    else:
+        game_menu.blit(white_tile,[540,194])
+    
     
     #If the mouse is near the grid draw the preview of where it's placed
     if hover_pos != (-1,-1):
-        game_menu.blit(white_ghost,(hover_pos))
+        if turn == 0:
+            game_menu.blit(black_ghost,(hover_pos))
+        else:
+            game_menu.blit(white_ghost,(hover_pos))
+    
+    if ai == None:
+        game_menu.blit(sidebar,[0,0])
     
     #Draw all tiles already placed
-    for tile in tile_pos:
-        game_menu.blit(white_tile,(tile[0]-13,tile[1]-13))
-    
+    if board != None:
+        for tile in board.tokens_placed:
+            if tile.colour == 'white':
+                game_menu.blit(white_tile,((tile.x*30)+46,(tile.y*30)+46))
+            elif tile.colour == 'black':
+                game_menu.blit(black_tile,((tile.x*30)+46,(tile.y*30)+46))
+                
     if win == 1:
         pygame.draw.rect(game_menu, (0, 0, 0), (60, 500, 200, 80), 0)
         textsurface = myfont.render("P1 Victory", False, (255,255, 255))
@@ -207,16 +207,37 @@ def draw_board():
         textsurface = myfont.render("AI Victory", False, (0,0,0))
         game_menu.blit(textsurface,(297,520))
 
-    #If any tiles are placed print out the position of the most recently placed one
-    if len(tile_pos) > 0:
-        tile = tile_pos[len(tile_pos)-1]
-
-        click_x = (tile[0]-60)//30
-        click_y = (tile[1]-60)//30
+    #If black tiles are placed print out the coordinates of the last one
+    if last_black != None:
+        coordinates = str(last_black.x)+","+str(last_black.y)
+        textsurface = coord_font.render(coordinates, False, (161, 148, 122))
+        outline = coord_font.render(coordinates, False, (0, 0, 0))
+        game_menu.blit(outline,(639,124))
+        game_menu.blit(outline,(639,125))
+        game_menu.blit(outline,(639,126))
+        game_menu.blit(outline,(640,124))
+        game_menu.blit(outline,(640,125))
+        game_menu.blit(outline,(640,126))
+        game_menu.blit(outline,(641,124))
+        game_menu.blit(outline,(641,125))
+        game_menu.blit(outline,(641,126))
+        game_menu.blit(textsurface,(640,125))
         
-        coordinates = "["+str(click_x)+","+str(click_y)+"]"
-        textsurface = myfont.render(coordinates, False, (0, 0, 0))
-        game_menu.blit(textsurface,(600,500))
+    #If white tiles are placed print out the coordinates of the last one
+    if last_white != None:
+        coordinates = str(last_white.x)+","+str(last_white.y)
+        textsurface = coord_font.render(coordinates, False, (161, 148, 122))
+        outline = coord_font.render(coordinates, False, (0, 0, 0))
+        game_menu.blit(outline,(639,184))
+        game_menu.blit(outline,(639,185))
+        game_menu.blit(outline,(639,186))
+        game_menu.blit(outline,(640,184))
+        game_menu.blit(outline,(640,185))
+        game_menu.blit(outline,(640,186))
+        game_menu.blit(outline,(641,184))
+        game_menu.blit(outline,(641,185))
+        game_menu.blit(outline,(641,186))
+        game_menu.blit(textsurface,(640,185))
     
     
 is_crashed = False
@@ -224,9 +245,155 @@ single_player_button = button(button_color, 300, 200, 200, 75, 'Single Player')
 pvp_button = button(button_color, 300, 300, 200, 75, 'PVP Mode')
 exit_button = button(button_color, 300, 500, 200, 75, 'Exit')
 help_button = button(button_color, 300, 400, 200, 75, 'Instructions')
-back_button = button(button_color, 695, 560, 100, 35, 'Back')
 
+reset_button = button(button_color, 575, 300, 150, 35, 'Reset')
+undo_button = button(button_color, 575, 350, 150, 35, 'Undo')
+play_help_button = button(button_color, 575, 400, 150, 35, 'Instructions')
+back_button = button(button_color, 575, 450, 150, 35, 'Back')
 
+def get_colour():
+    if turn == 0:
+        return "black"
+    else:
+        return "white"
+        
+def change_turn():
+    global turn
+    if turn == 0:
+        turn = 1
+    else:
+        turn = 0
+
+def check_win():
+    #Horizontal checking\
+    board_list = board.get_board_list()
+    global win
+    for x in range(len(board_list[0])):
+        sequence = []
+        for y in range(len(board_list[1])):
+            sequence.append(board_list[x][y])
+            if len(sequence) == 6:
+                sequence.pop(0)
+            count = [0,0,0]
+            for tile in sequence:
+                count[tile]+=1
+            if count[0] == 0:
+                if count[1] == 5:
+                    win = 1
+                    return True
+                elif count[2] == 5:
+                    win = 2
+                    return True
+                
+    #Vertical checking
+    for y in range(len(board_list[1])):
+        sequence = []
+        for x in range(len(board_list[0])):
+            sequence.append(board_list[x][y])
+            if len(sequence) == 6:
+                sequence.pop(0)
+            count = [0,0,0]
+            for tile in sequence:
+                count[tile]+=1
+            if count[0] == 0:
+                if count[1] == 5:
+                    win = 1
+                    return True
+                elif count[2] == 5:
+                    win = 2
+                    return True
+                
+    
+    #diagonals like /, from top right to bottom left along top
+    for y_start in range(4, len(board_list[1])):
+        sequence = []
+        x = 0
+        y = y_start
+        while y >= 0:
+            sequence.append(board_list[x][y])
+            if len(sequence) == 6:
+                sequence.pop(0)
+            count = [0,0,0]
+            for tile in sequence:
+                count[tile]+=1
+            if count[0] == 0:
+                if count[1] == 5:
+                    win = 1
+                    return True
+                elif count[2] == 5:
+                    win = 2
+                    return True
+            x+=1
+            y-=1
+            
+    ###diagonals / , from top right to bottom left along right
+    for x_start in range(1,len(board_list[0])-4):
+        sequence = []
+        x = x_start
+        y = len(board_list[1])-1
+        while x <= len(board_list[0])-1:
+            sequence.append(board_list[x][y])
+            if len(sequence) == 6:
+                sequence.pop(0)
+            count = [0,0,0]
+            for tile in sequence:
+                count[tile]+=1
+            if count[0] == 0:
+                if count[1] == 5:
+                    win = 1
+                    return True
+                elif count[2] == 5:
+                    win = 2
+                    return True
+            x+=1
+            y-=1
+        
+    ###diagonals \, from bottom right to top left along bottom
+    for y_start in range(4, len(board_list[1])):
+        sequence = []
+        x = len(board_list[0])-1
+        y = y_start
+        while y >= 0:
+            sequence.append(board_list[x][y])
+            if len(sequence) == 6:
+                sequence.pop(0)
+            count = [0,0,0]
+            for tile in sequence:
+                count[tile]+=1
+            if count[0] == 0:
+                if count[1] == 5:
+                    win = 1
+                    return True
+                elif count[2] == 5:
+                    win = 2
+                    return True
+            x-=1
+            y-=1
+            
+    ###diagonals \, from bottom right to top left along right
+    for x_start in range(len(board_list[0])-2,3,-1):
+        sequence = []
+        x = x_start
+        y = len(board_list[1])-1
+        while x >= 0:
+            sequence.append(board_list[x][y])
+            if len(sequence) == 6:
+                sequence.pop(0)
+            count = [0,0,0]
+            for tile in sequence:
+                count[tile]+=1
+            if count[0] == 0:
+                if count[1] == 5:
+                    win = 1
+                    return True
+                elif count[2] == 5:
+                    win = 2
+                    return True
+            x-=1
+            y-=1
+    return [-1,-1]
+
+        
 #The display logic
 while not is_crashed:
     if mode == 0: #On the main menu
@@ -253,6 +420,7 @@ while not is_crashed:
                     #multi_player
                 elif help_button.hover(coord):
                     print('Help menu.')
+                    back = 0
                     mode = 1
                 elif exit_button.hover(coord):
                     print('Player chooses to exit.')
@@ -264,19 +432,30 @@ while not is_crashed:
                 #change colour for responsivness
                 if single_player_button.hover(coord):
                     single_player_button.color = button_select_color
+                    pvp_button.color = button_color
+                    exit_button.color = button_color
+                    help_button.color = button_color
                 elif pvp_button.hover(coord):
                     pvp_button.color = button_select_color
+                    single_player_button.color = button_color
+                    exit_button.color = button_color
+                    help_button.color = button_color
                 elif exit_button.hover(coord):
                     exit_button.color = button_select_color
+                    single_player_button.color = button_color
+                    pvp_button.color = button_color
+                    help_button.color = button_color
                 elif help_button.hover(coord):
                     help_button.color = button_select_color
+                    single_player_button.color = button_color
+                    pvp_button.color = button_color
+                    exit_button.color = button_color
                 else:
                     single_player_button.color = button_color
                     pvp_button.color = button_color
                     exit_button.color = button_color
                     help_button.color = button_color
 
-            print(event)
     
     #instruction screen
     if mode == 1:
@@ -295,7 +474,7 @@ while not is_crashed:
             #back to main menu
             if event.type == pygame.MOUSEBUTTONUP:
                 if back_button.hover(coord):
-                    mode = 0
+                    mode = back
                     
             if event.type == pygame.MOUSEMOTION:
                 if back_button.hover(coord):
@@ -306,6 +485,7 @@ while not is_crashed:
     #Player versus Player screen
     if mode == 2:
         if start_pvp == 0:
+            print("init")
             init_pvp()
         start_pvp = 1
         pygame.display.set_caption('Versus.')
@@ -313,7 +493,6 @@ while not is_crashed:
         pygame.display.update()
         clock.tick(60)  # Frames per second.        
         for event in pygame.event.get():  # Creates a list of events that the user does with cursor.
-            print(event)
             coord = pygame.mouse.get_pos()  # Grabs the position of the mouse.
 
             if event.type == pygame.QUIT:
@@ -323,12 +502,20 @@ while not is_crashed:
             
             #on mouse releae
             if event.type == pygame.MOUSEBUTTONUP:
-                if back_button.hover(coord):
+                if undo_button.hover(coord):
+                    print("Undo")
+                elif play_help_button.hover(coord):
+                    back = 2
+                    mode = 1
+                elif back_button.hover(coord):
                     start_pvp = 0
                     kill_pvp()
                     mode = 0
+                elif reset_button.hover(coord):
+                    reset_pvp()
                 click_x = coord[0]
                 click_y = coord[1]
+
                 #If mouse is close to grid find a position snapped to the grid
                 if 45 < coord[0] < 493 and 45 < coord[1] < 493 and win == 0:
                     if 30 > click_x: 
@@ -339,26 +526,64 @@ while not is_crashed:
                     if 30 > click_y: 
                         click_y = 30; 
                     click_y = click_y + 15;
-                    click_y = click_y - (click_y % 30);   
+                    click_y = click_y - (click_y % 30);
+                    
+                    #play 
+                    
+                    #change it to the index
+                    click_x = (click_x-60)//30
+                    click_y = (click_y-60)//30
                 else:
                     click_x = -1
                     click_y = -1
-                #change it to the index
-                click_x = (click_x-60)/30
-                click_y = (click_y-60)/30
                     
-                rand_int = random.randint(0,2)
-                pygame.mixer.music.load('sounds/place_'+str(rand_int)+'.mp3')
-                pygame.mixer.music.play(0)
-                print(click_x,click_y)
-                
+                if click_x != -1 and click_y != -1:
+                    if board.set_token(click_x,click_y,turn+1,get_colour()):
+                        if turn == 0:
+                            last_black = board.tokens_placed[len(board.tokens_placed)-1]
+                            print(last_black.x,last_black.y)
+                        else:
+                            last_white = board.tokens_placed[len(board.tokens_placed)-1]
+                        draw_board()
+                        check_win()
+                        change_turn()
+                        rand_int = random.randint(0,2)
+                        pygame.mixer.music.load('sounds/place_'+str(rand_int)+'.mp3')
+                        pygame.mixer.music.set_volume(1.0)
+                        pygame.mixer.music.play(0)
+                    else:
+                        pygame.mixer.music.load('sounds/invalid.mp3')
+                        pygame.mixer.music.set_volume(0.2)
+                        pygame.mixer.music.play(0)
                 
             #on mouse movement
             if event.type == pygame.MOUSEMOTION:
                 if back_button.hover(coord):
                     back_button.color = button_select_color
+                    play_help_button.color = button_color
+                    undo_button.color = button_color
+                    reset_button.color = button_color
+                elif undo_button.hover(coord):
+                    undo_button.color = button_select_color
+                    back_button.color = button_color
+                    play_help_button.color = button_color
+                    reset_button.color = button_color
+                elif play_help_button.hover(coord):
+                    play_help_button.color = button_select_color
+                    back_button.color = button_color
+                    undo_button.color = button_color
+                    reset_button.color = button_color
+                elif reset_button.hover(coord):
+                    reset_button.color = button_select_color
+                    back_button.color = button_color
+                    play_help_button.color = button_color
+                    undo_button.color = button_color
                 else:
                     back_button.color = button_color
+                    play_help_button.color = button_color
+                    undo_button.color = button_color
+                    reset_button.color = button_color
+                    
                 #if mouse near grid find a position snapped to the grid
                 #This is saved for draw_board
                 if 45 < coord[0] < 493 and 45 < coord[1] < 493 and win == 0:

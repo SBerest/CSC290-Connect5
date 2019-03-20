@@ -1,4 +1,6 @@
-
+import pygame, pygame.draw
+from pygame.locals import *
+pygame.init()
 class button():
     """ Creates an instance of a button on the game menu.
     """
@@ -44,7 +46,7 @@ class button():
 
         if self.text != '':
             font = pygame.font.SysFont('Open Sans', 25)
-            text = font.render(self.text, True, white)
+            text = font.render(self.text, True, (255,255,255))
             game_menu.blit(text, (
             self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
 
