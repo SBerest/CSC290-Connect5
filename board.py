@@ -1,6 +1,24 @@
-from token import Token
 
+class Token:
+    """Tokens used to play a game of Connect 5.  A Token has a player_num
+    indicating which player set it, a colour, and an x_coord and y_coord
+    indicating its position on a GoBoard.  It also has neighbours immediately
+    adjacent to it vertically, horizontally, and diagonally, all initially set
+    to None."""
+    def __init__(self, player_num: int, colour: str, x_coord: int, y_coord: int,
+                 north=None, south=None, east=None, west=None, n_east=None,
+                 s_east=None, n_west=None, s_west=None):
+        self.player_num = player_num
+        self.colour = colour
+ 
+        self.x = x_coord
+        self.y = y_coord
 
+        self.neighbours = [s_west, south, s_east,  # List of self's immediately
+                           west, east, n_west,     # adjacent neighbours.
+                           north, n_east]
+
+                           
 class GoBoard:
     """The 15x15 GoBoard on which the game is played, textured by a board_skin
     which is set to "Brown" by default. The board keeps a list of all tokens
@@ -8,7 +26,9 @@ class GoBoard:
     def __init__(self, size=15, board_skin="Brown") -> None:
         self.tokens_placed = []
         self.size = size
-        self.spaces = [[None]*self.size]*self.size
+        self.spaces = [None]*size
+        for i in range(size):
+            self.spaces[i] = [None]*size
         self.board_skin = board_skin
 
     def set_board_skin(self, new_skin: str) -> None:
@@ -30,22 +50,25 @@ class GoBoard:
         """Return True if the object at spaces[column][row] is a Token.  Returns
         false otherwise.
         :rtype: bool"""
+        if type(self.spaces[column][row]) == Token:
+            print("token already at",column,row)
         return type(self.spaces[column][row]) == Token
 
-    def set_token(self, column: int, row: int,
-                  token: Token) -> bool:
+    def set_token(self, column: int, row: int, player_num: id, colour) -> bool:
         """Places token at spaces[column][row] if that space is not filled.
         Returns True if token was successfully placed and False otherwise.
         :rtype: bool"""
+        print("Try: ",column, row)
         if not self.is_filled(column, row):
-            new_token = self.set_neighbours(column, row, token)
+            token = Token(player_num, colour, column, row)
+            #new_token = self.set_neighbours(column, row, token)
             # The above sets token's neighbours.
-            self.update_neighbours(column, row, new_token)
+            #self.update_neighbours(column, row, new_token)
             # The above updates the neighbours list of new_token's neighbours.
-
-            self.spaces[column][row] = new_token  # Places new_token at
+            print("Set: ", column, row,token.x,token.y)
+            self.spaces[column][row] = token  # Places new_token at
                                                   # spaces[column][row].
-            self.tokens_placed.append(new_token)  # Updates the list of tokens
+            self.tokens_placed.append(token)  # Updates the list of tokens
                                                   # placed.
             return True
         return False
@@ -63,7 +86,8 @@ class GoBoard:
                                                   # placed.
             return True
         return False
-
+                
+''' uneeded
     def set_neighbours(self, column: int, row: int, token: Token) -> Token:
         """Takes token to be placed at spaces[column][row] and sets its
         neighbours to its immediately adjacent tokens.  Returns a new_token
@@ -111,3 +135,4 @@ class GoBoard:
                         # spaces[column + x_offset][row + y_offset].
                     adj_spaces_checked += 1
                     # Adjusts adj_spaces_checked accordingly on each iteration.
+'''
