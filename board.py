@@ -86,8 +86,20 @@ class GoBoard:
                                                   # placed.
             return True
         return False
-                
-''' uneeded
+
+    def get_board_list(self):
+        '''Gives the board in list form to be easy read.
+        @return: board
+        '''
+        board = [[0 for x in range(15)] for y in range(15)]
+        for x in range(self.size):
+            for y in range (self.size):
+                if self.is_filled(x, y):
+                    token = self.get_token(x, y)
+                    board[x][y] = token.player_num
+                board[x][y] = 0
+        return board
+        '''
     def set_neighbours(self, column: int, row: int, token: Token) -> Token:
         """Takes token to be placed at spaces[column][row] and sets its
         neighbours to its immediately adjacent tokens.  Returns a new_token
@@ -135,4 +147,5 @@ class GoBoard:
                         # spaces[column + x_offset][row + y_offset].
                     adj_spaces_checked += 1
                     # Adjusts adj_spaces_checked accordingly on each iteration.
+ '''
 '''
