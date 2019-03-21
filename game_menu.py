@@ -320,10 +320,11 @@ def draw_board():
     back_button.draw(game_menu, (0, 0, 0))
     
     #Turn indicator
-    if turn == 0:
-        game_menu.blit(black_tile,[540,134])
-    else:
-        game_menu.blit(white_tile,[540,194])
+    if win == 0:
+        if turn == 0:
+            game_menu.blit(black_tile,[540,134])
+        else:
+            game_menu.blit(white_tile,[540,194])
     
     #If the mouse is near the grid draw the preview of where it's placed
     if hover_pos != (-1,-1):
@@ -348,6 +349,7 @@ def draw_board():
     
     myfont = pygame.font.SysFont('Time New Roman', 50)
     if win == 1:
+        game_menu.blit(black_crown,[540,134])
         if win_sequence != []:
             for tile in win_sequence:
                 game_menu.blit(black_crown,((tile[0]*30)+46,(tile[1]*30)+46))  
@@ -356,6 +358,7 @@ def draw_board():
         game_menu.blit(textsurface,(75,520))
     
     if win == 2 and Ai == None:
+        game_menu.blit(white_crown,[540,194])
         if win_sequence != []:
             for tile in win_sequence:
                 game_menu.blit(white_crown,((tile[0]*30)+46,(tile[1]*30)+46))  
@@ -365,6 +368,7 @@ def draw_board():
         game_menu.blit(textsurface,(295,520))
 
     elif win == 2 and Ai != None:    
+        game_menu.blit(white_crown,[540,194])
         if win_sequence != []:
             for tile in win_sequence:
                 game_menu.blit(white_crown,((tile[0]*30)+46,(tile[1]*30)+46))  
