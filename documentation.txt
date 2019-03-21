@@ -18,14 +18,19 @@ easy_move places its next piece in a random adjacent square, or if none are avai
 med_move works the same way as easy_move, but additionally checks for lines of four pieces in a row. If one is found, it places a piece at the end of the line.
 hard_move works the same way as easy_move, but additionally checks for open lines of three pieces. If one is found, it places a piece at one of its ends. 
 
-GoBoard ******TODO
+GoBoard
 
 The GoBoard class is used to represent the game board. It has the following parameters:
 Tokens_placed keeps a list of the tokens that have been placed
 Size is the board's size
-Spaces
+Spaces represents the available spaces on the board
+
+It also has the following functions:
+Set_Token and Remove_Token place and remove pieces on the board
+Set_neighbors and update_neighbors keep track of adjacent pieces of a given space on the board
 
 Token
+
 
 The token class is used to represent the pieces on the game board. It has the following parameters:
 "player_num" for which player the piece belongs to
