@@ -16,7 +16,7 @@ class AI:
          @return: 
            move: 2 item list representing the next move
         '''
-        print("Last:",last_move)
+        print('Last:',last_move)
         direction_list = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]] #directions around a square
         
         if last_move == [-1,-1]:  
@@ -75,7 +75,7 @@ class AI:
     def hard_move(self,board,last_move):
         '''
             hard_move takes the board and it's previous move to first check if it can win or stop the opponent from winning
-            then it checks for an "open three" (ex 00xxx00). If it can't do either it just does an easy move.
+            then it checks for an 'open three' (ex 00xxx00). If it can't do either it just does an easy move.
             @param:  
                 board:      2d list of ints representing the board
                 last_move:  len 2 list representing where the ai player their previous move

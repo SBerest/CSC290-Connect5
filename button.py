@@ -1,12 +1,15 @@
 import pygame, pygame.draw
 from pygame.locals import *
 pygame.init()
-class button():
-    """ Creates an instance of a button on the game menu.
-    """
+# CREDIT:
+# - Tech With Tim via YouTube for help with button class.
+
+class Button():
+    ''' Creates an instance of a button on the game menu.
+    '''
 
     def __init__(self, color, x, y, width, height, text=''):
-        """
+        '''
         Initializes the attributes of the button.
 
         @param color: an RGB value stored in a tuple for the color of the button.
@@ -22,7 +25,7 @@ class button():
         @param text: text that will go within the button.
         @type text: str
         returns None.
-        """
+        '''
         self.color = color
         self.x = x
         self.y = y
@@ -31,14 +34,14 @@ class button():
         self.text = text
 
     def draw(self, game_menu, outline=None):
-        """
+        '''
         Draws the button on the game menu.
         @param game_menu: window of the game.
         @type: window
         @param outline: creates outline of the box with the given outline colour (using RGB tuple).
         @type: tuple
         returns None.
-        """
+        '''
         if outline:
             pygame.draw.rect(game_menu, outline, (self.x - 2, self.y - 2, self.width + 4, self.height + 4), 0)
 
@@ -51,12 +54,12 @@ class button():
             self.x + (self.width / 2 - text.get_width() / 2), self.y + (self.height / 2 - text.get_height() / 2)))
 
     def hover(self, coord):
-        """
+        '''
         Returns true or false if the user's mouse is hovered above a specific region.
         @param coord: coord is the mouse position/tuple of (x, y) coordinates.
         @type: tuple
         returns Boolean.
-        """
+        '''
         if coord[0] > self.x and coord[0] < self.x + self.width:
             if coord[1] > self.y and coord[1] < self.y + self.height:
                 return True

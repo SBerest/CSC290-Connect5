@@ -1,9 +1,9 @@
 class Token:
-    """Tokens used to play a game of Connect 5.  A Token has a player_num
+    '''Tokens used to play a game of Connect 5.  A Token has a player_num
     indicating which player set it, a colour, and an x_coord and y_coord
     indicating its position on a GoBoard.  It also has neighbours immediately
     adjacent to it vertically, horizontally, and diagonally, all initially set
-    to None."""
+    to None.'''
     def __init__(self, player_num: int, colour: str, x_coord: int, y_coord: int,
                  north=None, south=None, east=None, west=None, n_east=None,
                  s_east=None, n_west=None, s_west=None):

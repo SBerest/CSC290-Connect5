@@ -12,7 +12,7 @@ class Board_History:
         return self.boards == []
 
     def push(self, board):
-        print("Push")
+        print('Push')
         return self.boards.append(copy.deepcopy(board))
 
     def pop(self):
@@ -20,7 +20,7 @@ class Board_History:
             print(len(self.boards))
             return self.boards.pop()
         else:
-            print("Only empty board left")
+            print('Only empty board left')
             return GoBoard()
     def peek(self):
         return self.boards[len(self.boards)-1]
@@ -37,13 +37,13 @@ class Board_History:
     #
     #*****
     def undo(self,board,times):
-        print("undo:",len(self.boards))
+        print('undo:',len(self.boards))
         if len(self.boards) == 0:
             return board #in case undo is called before any moves were played
         for i in range(times-1):
-            print("pop")
+            print('pop')
             if len(self.boards) == 1:
                 return self.pop() 
             self.pop() 
-        print("pop")
+        print('pop')
         return self.pop()
