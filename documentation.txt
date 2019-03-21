@@ -1,0 +1,62 @@
+-Directory structure
+
+The main folder has all the functions, documentation, as well as sub folders containing additional assets.
+AI.py has contains the AI class
+board.py contains the GoBoard and Token classes
+button.py contains the button class
+gamemenu.py contains all major functions: the pygame initialization, initialization for buttons on the main menu and during play, and the logic behind the menu, instructions, and game modes.
+undo.py contains the Undo function
+
+The assets folder has all the images, and sounds has the audio.
+
+-Classes
+
+AI
+
+The AI class dictates what moves the computer will do in single player mode. It has the parameters "difficulty" and "last_move", and the functions "easy_move", "med_move", and "hard_move".
+easy_move places its next piece in a random adjacent square, or if none are available, a random empty square.
+med_move works the same way as easy_move, but additionally checks for lines of four pieces in a row. If one is found, it places a piece at the end of the line.
+hard_move works the same way as easy_move, but additionally checks for open lines of three pieces. If one is found, it places a piece at one of its ends. 
+
+GoBoard ******TODO
+
+The GoBoard class is used to represent the game board. It has the following parameters:
+Tokens_placed keeps a list of the tokens that have been placed
+Size is the board's size
+Spaces
+
+Token
+
+The token class is used to represent the pieces on the game board. It has the following parameters:
+"player_num" for which player the piece belongs to
+"color" for the color of the piece displayed
+"x_coord" and "y_coord" for the piece's position on the board
+"neighbors" for adjacent pieces on the board
+
+Button
+
+The button class is used to create buttons in the game menu. It has the following parameters:
+color for the color of the button
+x and y for the buttons position on the screen
+width and height for the dimensions of the button
+text for the text that will be displayed
+
+It has the functions draw, which draws the button on the game menu, and hover, which checks if the user's mouse is hovered above a certain region.
+
+Player
+
+The player class represents the player. It has the parameters turns, which tracks the number of turns the player has made, and name. It also has the functions get_name, set_name, get_turns, and set_turns, which get and set the respective parameters.
+
+
+-Functions
+
+draw_main_menu, draw_help_screen, and draw_board are all functions to draw the respective screens and the objects within.
+
+init_pvp, reset_pvp, kill_pvp, init_pva, reset_pva, and kill_pva are all functions to initialize, reset, and kill the game.
+
+main_menu and instructions run their respective drawers, as well as the logic for the buttons within.
+
+p_verse_p and p_verse_ai have the logic for the game modes, board, and buttons contained within.
+
+undo brings the board back to the players' previous turn
+
