@@ -703,6 +703,7 @@ def p_verse_p():
     and board for displaying.
     """
     global back
+    global board
     global hover_pos
     global last_black
     global last_white
@@ -764,6 +765,8 @@ def p_verse_p():
                 click_y = -1
                 
             if click_x != -1 and click_y != -1:
+                if board == None:
+                    board = GoBoard()
                 if board.set_token(click_x,click_y,turn+1,get_colour(),board_history):
                     if turn == 0:
                         last_black = board.tokens_placed[len(board.tokens_placed)-1]
@@ -835,6 +838,7 @@ def p_verse_ai():
     and board for displaying.
     """
     global back
+    global board
     global hover_pos
     global last_black
     global last_white
