@@ -14,10 +14,11 @@
 - Once you have the game opened and ready to go, you can start by choosing whether to play against another player or an AI.
 - If you chose to play against the AI you will be given 3 difficults to pick from.
 - After choosing your opponent, a 15 by 15 game board will appear that will begin with player 1 (black peices) going first.
-- The players will now take turns placing thier coloured peices (black and white) in hopes of getting 5 or more in a row to be victorious.
+- The players will now take turns placing thier coloured peices (black and white) on empty intersections in hopes of getting 5 or more in a row to be victorious.
 - This row can be either vertical, horizontal or diagonal.
 - Throughout the game the position for latest piece placed for each player along with which player's turn it is will be displayed on the right hand side of game board.  
-- After a player has obtained 5 or more in a row the game will end with a victory box displaying the winner.
+- The options to reset the game and undo a turn are also located on the right side of the board.
+- After a player has obtained 5 or more in a row the game will end with a victory box displaying the winner and the winning 5 pieces.
 
 [[Back to top]](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#index)
 
@@ -27,7 +28,7 @@
 
 | ![Screen 1](https://i.imgur.com/NaCPkS1.png) | ![Screen 2](https://i.imgur.com/gzJbGtH.png) |
 |---------------------------------------------|---------------------------------------------|
-| ![Screen 3](https://i.imgur.com/hfYEIYu.png) | ![Screen 4](https://i.imgur.com/I7mbazv.png) |
+| ![Screen 3](https://i.imgur.com/0CicuIH.png) | ![Screen 4](https://i.imgur.com/mUY21fH.png) |
 
 ## Game Features
 
