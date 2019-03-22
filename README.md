@@ -44,7 +44,7 @@
 
 [[Back to top]](https://github.com/SBerest/CSC290-Project-ArraysStartAt1#index)
 
-- Move piece: Drag Mouse
+- See where you can play: Drag Mouse
 - Place piece: Left Mouse Click
 - Select Menu Options: Left Mouse Click
 
@@ -54,7 +54,7 @@
 
 ### For `Windows`
 
-- :arrow_down: Download the zip file or open it in github desktop by clicking the green button called 'Clone or download'.
+- :arrow_down: Download the zip file "connect_five.zip" launch the "connect_five.exe" executable.
 - Proceed to extract the zip file and run game_menu.py to begin playing the game.
 
 ## License

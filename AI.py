@@ -16,7 +16,6 @@ class AI:
          @return: 
            move: 2 item list representing the next move
         '''
-        print('Last:',last_move)
         direction_list = [[-1,-1],[-1,0],[-1,1],[0,-1],[0,1],[1,-1],[1,0],[1,1]] #directions around a square
         
         if last_move == [-1,-1]:  

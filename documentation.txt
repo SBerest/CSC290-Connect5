@@ -8,6 +8,7 @@ gamemenu.py contains all major functions: the pygame initialization, initializat
 undo.py contains the Undo function
 
 The assets folder has all the images, and sounds has the audio.
+Addendum:Unfortunately to create a .exe we had to pull the assets out into the same directory.
 
 -Classes
 
@@ -30,7 +31,6 @@ Set_Token and Remove_Token place and remove pieces on the board
 Set_neighbors and update_neighbors keep track of adjacent pieces of a given space on the board
 
 Token
-
 
 The token class is used to represent the pieces on the game board. It has the following parameters:
 "player_num" for which player the piece belongs to
@@ -65,3 +65,7 @@ p_verse_p and p_verse_ai have the logic for the game modes, board, and buttons c
 
 undo brings the board back to the players' previous turn
 
+-To extend the program.
+One simple way to extend the program is to add an additional ai type. Simply create a function that, when called,
+ returns a 2 item list representing the index move. Then, in ai.py and in the function move, add an elif with self.difficulty (x).
+Then return self.YOUR_FUNCTION(). Finally you need to add a button that changes the difficulty to (x) and the mode to 3.
