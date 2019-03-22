@@ -54,7 +54,7 @@
 
 ### For `Windows`
 
-- :arrow_down: Download the zip file or open it in github desktop by clicking the green button called 'Clone or download'.
+- :arrow_down: [Download the prebuilt zip file and unzip it.](https://github.com/SBerest/CSC290-Project-ArraysStartAt1/releases/latest)
 - Proceed to extract the zip file and run game_menu.py to begin playing the game.
 
 ## License
