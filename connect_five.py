@@ -32,18 +32,18 @@ pygame.display.set_caption('Connect 5')
 clock = pygame.time.Clock()
 
 # Loading in the pictures for the menu.
-background_image = pygame.image.load('background_image.jpg')
-background_blur = pygame.image.load('background_blur.jpg')
-instructions_image = pygame.image.load('instructions.png')
-game_picture = pygame.image.load('gameboard.png')
-black_tile = pygame.image.load('Black.png')
-white_tile = pygame.image.load('White.png')
-black_crown = pygame.image.load('Black_crown.png')
-white_crown = pygame.image.load('White_crown.png')
-black_ghost = pygame.image.load('Black_trans.png')
-white_ghost = pygame.image.load('White_trans.png')
-sidebar = pygame.image.load('sidebar.png')
-sidebar_ai = pygame.image.load('sidebar_ai.png')
+background_image = pygame.image.load('assets/background_image.jpg')
+background_blur = pygame.image.load('assets/background_blur.jpg')
+instructions_image = pygame.image.load('assets/instructions.png')
+game_picture = pygame.image.load('assets/gameboard.png')
+black_tile = pygame.image.load('assets/Black.png')
+white_tile = pygame.image.load('assets/White.png')
+black_crown = pygame.image.load('assets/Black_crown.png')
+white_crown = pygame.image.load('assets/White_crown.png')
+black_ghost = pygame.image.load('assets/Black_trans.png')
+white_ghost = pygame.image.load('assets/White_trans.png')
+sidebar = pygame.image.load('assets/sidebar.png')
+sidebar_ai = pygame.image.load('assets/sidebar_ai.png')
 
 def title_display(text):
     '''
@@ -590,7 +590,7 @@ def main_menu():
         #On mouse release
         if event.type == pygame.MOUSEBUTTONUP:
             if single_player_button.hover(coord):
-                pygame.mixer.music.load('invalid.mp3')
+                pygame.mixer.music.load('sounds/invalid.mp3')
                 pygame.mixer.music.play(0)
             elif easy_button.hover(coord):
                 mode = 3
@@ -763,11 +763,11 @@ def p_verse_p():
                     change_turn()
                     draw_board()
                     rand_int = random.randint(0,2)
-                    pygame.mixer.music.load('place_'+str(rand_int)+'.mp3')
+                    pygame.mixer.music.load('sounds/place_'+str(rand_int)+'.mp3')
                     pygame.mixer.music.set_volume(1.0)
                     pygame.mixer.music.play(0)
                 else:
-                    pygame.mixer.music.load('invalid.mp3')
+                    pygame.mixer.music.load('sounds/invalid.mp3')
                     pygame.mixer.music.set_volume(0.2)
                     pygame.mixer.music.play(0)
             
@@ -854,7 +854,7 @@ def p_verse_ai():
             change_turn()
             draw_board()
             rand_int = random.randint(0,2)
-            pygame.mixer.music.load('place_'+str(rand_int)+'.mp3')
+            pygame.mixer.music.load('sounds/place_'+str(rand_int)+'.mp3')
             pygame.mixer.music.set_volume(1.0)
             pygame.mixer.music.play(0)
             
@@ -915,11 +915,11 @@ def p_verse_ai():
                         change_turn()
                         draw_board()
                         rand_int = random.randint(0,2)
-                        pygame.mixer.music.load('place_'+str(rand_int)+'.mp3')
+                        pygame.mixer.music.load('sounds/place_'+str(rand_int)+'.mp3')
                         pygame.mixer.music.set_volume(1.0)
                         pygame.mixer.music.play(0)
                     else:
-                        pygame.mixer.music.load('invalid.mp3')
+                        pygame.mixer.music.load('sounds/invalid.mp3')
                         pygame.mixer.music.set_volume(0.2)
                         pygame.mixer.music.play(0)
             
